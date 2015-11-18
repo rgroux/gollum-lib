@@ -54,7 +54,7 @@ context "Wiki" do
   test "list pages" do
     pages = @wiki.pages
     assert_equal \
-      ['Bilbo-Baggins.md', 'Boromir.md', 'Elrond.md', 'Eye-Of-Sauron.md', 'Hobbit.md', 'Home.textile', 'My-Precious.md', 'Samwise Gamgee.mediawiki', 'todo.txt'],
+      ['Bilbo-Baggins.md', 'Boromir.md', 'Elrond.md', 'Eye-Of-Sauron.md', 'Hobbit.md', 'Home.textile', 'My-Precious.md', 'RingBearers.md', 'Samwise Gamgee.mediawiki', 'todo.txt'],
       pages.map(&:filename).sort
   end
 
@@ -66,11 +66,11 @@ context "Wiki" do
   end
 
   test "counts pages" do
-    assert_equal 9, @wiki.size
+    assert_equal 10, @wiki.size
   end
 
   test "latest changes in repo" do
-    assert_equal @wiki.latest_changes({:max_count => 1}).first.id, "874f597a5659b4c3b153674ea04e406ff393975e"
+    assert_equal @wiki.latest_changes({:max_count => 1}).first.id, "a3e857e03ecc69a99f1dd72dc3f7e0c47602a05a"
   end
   
   test "text_data" do
@@ -364,7 +364,6 @@ context "Wiki search" do
   end
   
   test "search results should be able to return a filename with an embedded colon" do
-    page = @wiki.page("filename:with:colons")
     results = @wiki.search("colons")
     assert_not_nil results
     assert_equal "filename:with:colons", results.first[:name]
@@ -609,8 +608,6 @@ context "Wiki page writing with different branch" do
   end
 
   test "write_page" do
-    cd = commit_details
-
     @branch.write_page("Bilbo", :markdown, "# Bilbo", commit_details)
     assert @branch.page("Bilbo")
     assert @wiki.page("Gollum")
@@ -750,7 +747,7 @@ context "Renames directory traversal" do
     source = @wiki.paged("H", "G")
 
     # G/H.md => G/K/F.md
-    assert k = @wiki.rename_page(source, "K/F", rename_commit_details)
+    assert @wiki.rename_page(source, "K/F", rename_commit_details)
 
     new_page = @wiki.paged("F", "K")
     assert_not_nil new_page
@@ -762,7 +759,7 @@ context "Renames directory traversal" do
     source = @wiki.paged("H", "G")
 
     # G/H.md => G/K L/F.md
-    assert k = @wiki.rename_page(source, "K L/F", rename_commit_details)
+    assert @wiki.rename_page(source, "K L/F", rename_commit_details)
 
     new_page = @wiki.paged("F", "K L")
     assert_not_nil new_page
